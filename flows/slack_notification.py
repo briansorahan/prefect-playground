@@ -4,11 +4,6 @@ from prefect.storage import Git
 from prefect.tasks.notifications.slack_task import SlackTask
 
 
-@task
-def foo(msg):
-    SlackTask(message=msg)
-
-
 with Flow(name="slack_notification") as flow:
     flow.storage = Git(
         repo_host="github.com",
@@ -20,4 +15,5 @@ with Flow(name="slack_notification") as flow:
         image="devprismcr.azurecr.io/acuity/prefect/flows:0.0.70",
     )
     msg = Parameter("msg", default="testing prefect flow notifications")
-    foo_task = foo(msg)
+    slack = SlackTask()
+    slack(message=msg)
