@@ -1,12 +1,12 @@
-from prefect import Flow, task
+from prefect import Flow, Parameter, task
 from prefect.run_configs.kubernetes import KubernetesRun
 from prefect.storage import Git
 from prefect.tasks.notifications.slack_task import SlackTask
 
 
 @task
-def foo():
-    SlackTask(message={"foo": "bar"})
+def foo(msg):
+    SlackTask(message=msg)
 
 
 with Flow(name="slack_notification") as flow:
@@ -17,6 +17,7 @@ with Flow(name="slack_notification") as flow:
         branch_name="master",
     )
     flow.run_config = KubernetesRun(
-        image="devprismcr.azurecr.io/acuity/prefect/flows:0.0.69",
+        image="devprismcr.azurecr.io/acuity/prefect/flows:0.0.70",
     )
-    foo_task = foo()
+    msg = Parameter("msg", default="testing prefect flow notifications")
+    foo_task = foo(msg)
