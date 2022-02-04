@@ -1,21 +1,24 @@
 import gpudb
 
-from prefect import Flow, Parameter, task
+from prefect import Flow, Parameter, Task
 from prefect.run_configs.kubernetes import KubernetesRun
 from prefect.storage import Git
 
 
-@task
-def show_system_status(host, username, password):
-    conn = gpudb.GPUdb(
-        host=host,
-        username=username,
-        password=password,
-    )
-    system_status = conn.show_system_status()
-    print(f"system_status: {system_status}")
-    for item in system_status.items():
-        print(item)
+class ShowSystemStatus(Task):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+    def run(self, host, username, password):
+        conn = gpudb.GPUdb(
+            host=host,
+            username=username,
+            password=password,
+        )
+        system_status = conn.show_system_status()
+        self.logger.info(f"system_status: {system_status}")
+        for item in system_status.items():
+            self.logger.info(f"item: {item}")
 
 
 with Flow(name="kinetica_system_status") as flow:
@@ -31,4 +34,5 @@ with Flow(name="kinetica_system_status") as flow:
     username = Parameter("username")
     password = Parameter("password")
     host = Parameter("host")
+    show_system_status = ShowSystemStatus()
     show_system_status(host, username, password)
