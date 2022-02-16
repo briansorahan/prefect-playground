@@ -24,7 +24,7 @@ with Flow(name="task_chain") as flow:
     flow.storage = Git(
         repo_host="github.com",
         repo="briansorahan/prefect-playground",
-        flow_path="flows/kinetica_system_status.py",
+        flow_path="flows/task_chain.py",
         branch_name="master",
     )
     flow.run_config = KubernetesRun(
