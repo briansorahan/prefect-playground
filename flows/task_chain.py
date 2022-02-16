@@ -8,7 +8,7 @@ class A(Task):
         super().__init__(*args, **kwargs)
 
     def run(self):
-        print("run task A")
+        self.logger.info("run task A")
         return "foo"
 
 
@@ -17,7 +17,7 @@ class B(Task):
         super().__init__(*args, **kwargs)
 
     def run(self, s):
-        print(f"run task B with s={s}")
+        self.logger.info(f"run task B with s={s}")
 
 
 with Flow(name="task_chain") as flow:
